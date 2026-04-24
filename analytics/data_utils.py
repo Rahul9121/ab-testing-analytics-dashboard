@@ -10,6 +10,19 @@ TRUE_VALUES = {"1", "true", "t", "yes", "y", "converted", "success"}
 FALSE_VALUES = {"0", "false", "f", "no", "n", "not_converted", "fail"}
 
 
+def _extract_series(df: pd.DataFrame, column_name: str, role: str) -> pd.Series:
+    if column_name not in df.columns:
+        raise ValueError(f"Selected {role} column '{column_name}' is not in the dataset.")
+
+    selected = df.loc[:, column_name]
+    if isinstance(selected, pd.DataFrame):
+        selected = selected.iloc[:, 0]
+
+    if not isinstance(selected, pd.Series):
+        raise ValueError(f"Could not read {role} column '{column_name}' as a valid series.")
+    return selected.copy()
+
+
 def _normalize_conversion_column(series: pd.Series) -> pd.Series:
     if pd.api.types.is_bool_dtype(series):
         return series.astype(int)
@@ -41,35 +54,43 @@ def prepare_experiment_dataframe(
     date_col: Optional[str] = None,
     segment_col: Optional[str] = None,
 ) -> pd.DataFrame:
-    required_cols = [variant_col, conversion_col]
-    selected_cols = [*required_cols]
+    if variant_col == conversion_col:
+        raise ValueError("Variant/group column and conversion column must be different.")
+
+    prepared = pd.DataFrame(
+        {
+            "variant_raw": _extract_series(df, variant_col, "variant/group"),
+            "conversion_raw": _extract_series(df, conversion_col, "conversion"),
+        }
+    )
+
     if date_col:
-        selected_cols.append(date_col)
+        prepared["date_raw"] = _extract_series(df, date_col, "time")
     if segment_col:
-        selected_cols.append(segment_col)
+        prepared["segment_raw"] = _extract_series(df, segment_col, "segment")
 
-    missing = [col for col in selected_cols if col not in df.columns]
-    if missing:
-        raise ValueError(f"Missing required columns in dataset: {missing}")
-
-    prepared = df[selected_cols].copy()
-    prepared = prepared.dropna(subset=[variant_col, conversion_col])
-    prepared["variant"] = prepared[variant_col].astype(str).str.strip()
+    prepared = prepared.dropna(subset=["variant_raw", "conversion_raw"])
+    prepared["variant"] = prepared["variant_raw"].astype(str).str.strip()
     prepared = prepared[prepared["variant"] != ""]
-    prepared["converted"] = _normalize_conversion_column(prepared[conversion_col])
+    prepared["converted"] = _normalize_conversion_column(prepared["conversion_raw"])
 
     if date_col:
-        parsed_time = pd.to_datetime(prepared[date_col], errors="coerce")
+        parsed_time = pd.to_datetime(prepared["date_raw"], errors="coerce")
         prepared["event_time"] = parsed_time
         prepared = prepared.dropna(subset=["event_time"])
 
     if segment_col:
-        prepared["segment"] = prepared[segment_col].astype(str).str.strip().replace("", "Unknown")
+        prepared["segment"] = prepared["segment_raw"].astype(str).str.strip().replace("", "Unknown")
 
     if prepared.empty:
         raise ValueError("No valid rows available after cleaning and parsing the selected columns.")
 
-    return prepared.reset_index(drop=True)
+    output_cols = ["variant", "converted"]
+    if date_col:
+        output_cols.append("event_time")
+    if segment_col:
+        output_cols.append("segment")
+    return prepared[output_cols].reset_index(drop=True)
 
 
 def generate_synthetic_experiment(

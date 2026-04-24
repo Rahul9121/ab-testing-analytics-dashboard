@@ -52,6 +52,12 @@ st.markdown(
     <div class="hero">
         <div class="hero-title">A/B Testing Analytics Dashboard</div>
         <div class="hero-subtitle">Upload experiment data or generate synthetic traffic to measure p-values, confidence intervals, and conversion lift.</div>
+        <div class="hero-badges">
+            <span class="badge-pill">Two-proportion Z-test</span>
+            <span class="badge-pill">Confidence Intervals</span>
+            <span class="badge-pill">Conversion Lift Analytics</span>
+            <span class="badge-pill badge-author">Built by Rahul Ega</span>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -106,11 +112,28 @@ else:
 if raw_df is None or raw_df.empty:
     st.error("The selected data source returned no rows.")
     st.stop()
+st.markdown('<div class="section-title">Dataset Overview</div>', unsafe_allow_html=True)
+dataset_cards = st.columns(3)
+dataset_payload = [
+    ("Rows", f"{len(raw_df):,}"),
+    ("Columns", f"{raw_df.shape[1]:,}"),
+    ("Missing cells", f"{int(raw_df.isna().sum().sum()):,}"),
+]
+for col, (title, value) in zip(dataset_cards, dataset_payload):
+    with col:
+        st.markdown(
+            f"""
+            <div class="mini-card">
+                <div class="mini-card-title">{title}</div>
+                <div class="mini-card-value">{value}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 with st.expander("Preview dataset", expanded=False):
     st.dataframe(raw_df.head(50), use_container_width=True)
-
-st.markdown("### Configure experiment columns")
+st.markdown('<div class="section-title">Configure Experiment Columns</div>', unsafe_allow_html=True)
 columns = list(raw_df.columns)
 
 variant_guess = guess_column(columns, ["group", "variant", "arm", "bucket", "test"])
@@ -145,6 +168,9 @@ with right:
 
 date_col = None if date_col_opt == "None" else date_col_opt
 segment_col = None if segment_col_opt == "None" else segment_col_opt
+if variant_col == conversion_col:
+    st.error("Variant/group column and conversion column must be different. Please select two different columns.")
+    st.stop()
 
 try:
     prepared_df = prepare_experiment_dataframe(
@@ -191,6 +217,7 @@ results = compute_experiment_stats(
 )
 
 group_stats = results["group_stats"]
+st.markdown('<div class="section-title">Experiment Results</div>', unsafe_allow_html=True)
 
 metric_cols = st.columns(5)
 metric_payload = [
@@ -354,4 +381,13 @@ st.download_button(
     data=summary_df.to_csv(index=False).encode("utf-8"),
     file_name="ab_test_summary.csv",
     mime="text/csv",
+)
+
+st.markdown(
+    """
+    <div class="credit-footer">
+        Crafted by <strong>Rahul Ega</strong> • A/B Testing Analytics Dashboard
+    </div>
+    """,
+    unsafe_allow_html=True,
 )

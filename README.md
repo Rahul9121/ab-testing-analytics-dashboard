@@ -1,6 +1,9 @@
 # A/B Testing Analytics Dashboard (Experimentation Platform)
 Interactive experimentation dashboard built with **Streamlit + Plotly + SciPy + Statsmodels**. It supports uploaded experiment data, synthetic simulation, and Kaggle-compatible datasets to produce statistical decisions with interpretation.
 
+## Creator
+- **Rahul Ega** (`Rahul9121`)
+
 ## What this project does
 - Upload A/B experiment CSV data and map columns interactively.
 - Compute core experiment metrics:

@@ -1,9 +1,11 @@
 :root {
     --bg-1: #0b1020;
     --bg-2: #151c33;
+    --bg-3: #1f2a4a;
     --card-bg: rgba(19, 25, 44, 0.78);
     --card-border: rgba(107, 140, 255, 0.30);
     --primary: #6f8eff;
+    --primary-2: #44d6b6;
     --text-main: #eff3ff;
     --text-soft: #b8c4f0;
 }
@@ -16,7 +18,8 @@
 }
 
 .block-container {
-    padding-top: 1.3rem;
+    max-width: 1320px;
+    padding-top: 1.2rem;
     padding-bottom: 2.2rem;
 }
 
@@ -27,6 +30,31 @@
     padding: 1.2rem 1.3rem;
     margin-bottom: 1rem;
     backdrop-filter: blur(5px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+}
+
+.hero-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+}
+
+.badge-pill {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(13, 20, 37, 0.62);
+    color: var(--text-main);
+    border: 1px solid rgba(131, 159, 255, 0.35);
+    border-radius: 999px;
+    font-size: 0.76rem;
+    padding: 0.26rem 0.62rem;
+    letter-spacing: 0.2px;
+}
+
+.badge-author {
+    border-color: rgba(68, 214, 182, 0.60);
+    color: #d7fff4;
 }
 
 .hero-title {
@@ -42,8 +70,39 @@
     font-size: 0.98rem;
 }
 
+.section-title {
+    color: #d8e3ff;
+    margin: 1rem 0 0.55rem 0;
+    font-size: 1.02rem;
+    font-weight: 650;
+    letter-spacing: 0.2px;
+}
+
+.mini-card {
+    background: rgba(17, 23, 39, 0.62);
+    border: 1px solid rgba(126, 150, 255, 0.24);
+    border-radius: 12px;
+    padding: 0.72rem 0.84rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.24);
+    min-height: 82px;
+}
+
+.mini-card-title {
+    color: var(--text-soft);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.38px;
+}
+
+.mini-card-value {
+    color: var(--text-main);
+    font-size: 1.22rem;
+    font-weight: 700;
+    margin-top: 0.3rem;
+}
+
 .metric-card {
-    background: var(--card-bg);
+    background: linear-gradient(145deg, rgba(22, 30, 54, 0.84), rgba(14, 20, 36, 0.84));
     border: 1px solid var(--card-border);
     border-radius: 14px;
     padding: 0.9rem 0.9rem 0.8rem 0.9rem;
@@ -74,5 +133,41 @@
 [data-testid="stSidebar"] {
     background: rgba(9, 13, 24, 0.94);
     border-right: 1px solid rgba(130, 153, 255, 0.22);
+}
+
+div[data-baseweb="select"] > div,
+[data-testid="stNumberInput"] input,
+[data-testid="stTextInput"] input,
+[data-testid="stTextArea"] textarea {
+    background: rgba(20, 27, 48, 0.82) !important;
+    border-color: rgba(120, 145, 255, 0.40) !important;
+    color: var(--text-main) !important;
+}
+
+[data-baseweb="slider"] [role="slider"] {
+    background: linear-gradient(140deg, var(--primary), var(--primary-2)) !important;
+}
+
+.stDownloadButton > button {
+    width: 100%;
+    border: 1px solid rgba(112, 140, 255, 0.55);
+    background: linear-gradient(140deg, rgba(98, 123, 255, 0.86), rgba(70, 201, 175, 0.74));
+    color: #f5f8ff;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.stDownloadButton > button:hover {
+    border-color: rgba(138, 160, 255, 0.9);
+    box-shadow: 0 8px 18px rgba(76, 108, 235, 0.35);
+}
+
+.credit-footer {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(121, 146, 255, 0.24);
+    color: var(--text-soft);
+    text-align: center;
+    font-size: 0.85rem;
 }
 
